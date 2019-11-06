@@ -1,0 +1,16 @@
+name: AWS Cloudfront Invalidation
+description: A Buildkite plugin that invalidates AWS Cloudfront caches
+author: https://github.com/envato
+requirements:
+  - aws
+  - bash
+configuration:
+  properties:
+    distribution-id:
+      type: string
+    paths:
+      type: [ string, array ]
+      minimum: 1
+  required:
+    - distribution-id
+    - paths

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+# shellcheck source=lib/shared.bash
+. "$DIR/../lib/shared.bash"
+
+if [[ ${BUILDKITE_COMMAND_EXIT_STATUS:-0} != '0' ]]; then
+  echo 'Skipping Cloudfront invalidation because the command failed'
+  exit 0
+fi
+
+distribution_id="$(plugin_read_config DISTRIBUTION_ID)"
+paths=()
+while read -r line ; do
+  [[ -n "$line" ]] && paths+=("$line")
+done <<< "$(plugin_read_list PATHS)"
+
+echo "~~~ :cloudfront: Creating Cloudfront invalidation for distribution $distribution_id on paths" "${paths[@]}"
+aws cloudfront create-invalidation \
+  --distribution-id "$distribution_id" \
+  --paths "${paths[@]}" \
+  --query Invalidation.Id \
+  --output text
