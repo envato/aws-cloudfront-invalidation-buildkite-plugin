@@ -1,6 +1,6 @@
 # AWS Cloudfront Invalidation Buildkite Plugin
 
-![Build status](https://badge.buildkite.com/bc93ae8fdb633030909b9c42fc0a89a6712d4407c387209706.svg?branch=main)
+[![tests](https://github.com/envato/aws-cloudfront-invalidation-buildkite-plugin/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/envato/aws-cloudfront-invalidation-buildkite-plugin/actions/workflows/tests.yml)
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
 
 A [Buildkite plugin] that invalidates AWS Cloudfront caches.
