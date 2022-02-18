@@ -17,8 +17,10 @@ while read -r line ; do
 done <<< "$(plugin_read_list PATHS)"
 
 echo "~~~ :cloudfront: Creating Cloudfront invalidation for distribution $distribution_id on paths" "${paths[@]}"
-aws cloudfront create-invalidation \
-  --distribution-id "$distribution_id" \
-  --paths "${paths[@]}" \
-  --query Invalidation.Id \
-  --output text
+SLEEP_PERIOD=15
+until aws cloudfront create-invalidation --distribution-id "$distribution_id" --paths "${paths[@]}" --query Invalidation.Id --output text
+do
+  echo "Invalidation failed - retrying in ${SLEEP_PERIOD}"
+  sleep ${SLEEP_PERIOD}
+  SLEEP_PERIOD=$((SLEEP_PERIOD+SLEEP_PERIOD))
+done
