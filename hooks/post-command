@@ -15,7 +15,7 @@ distribution_id="$(plugin_read_config DISTRIBUTION_ID)"
 # This tries to create an invalidation with an empty path list
 #
 # - If we have permission to call create-invalidation for this distribution,
-#   we'll recieve an InvalidArgument error, and we can procede with a real invalidation
+#   we'll recieve an InvalidArgument error, and we can proceed with a real invalidation
 # - Otherwise, either an AccessDenied or NoSuchDistribution error are the most likely results,
 #   in which case we exit with error
 if ! aws cloudfront create-invalidation --distribution-id "$distribution_id" --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' 2>&1 | grep InvalidArgument > /dev/null; then
