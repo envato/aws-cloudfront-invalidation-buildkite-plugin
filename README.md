@@ -14,6 +14,7 @@ steps:
           distribution-id: <cloudfront-distribution-id>
           paths:
             - <path/files/to/be/invalidated>
+          debug: true
 ```
 
 ## Configuration
@@ -25,6 +26,10 @@ The id of the Cloudfront distribution to create an invalidation for.
 ### `paths`
 
 One or more [invalidation paths].
+
+### `debug`
+
+Adds the `--debug` flag to all AWS CLI commands, providing detailed output for troubleshooting.
 
 ## Development
 
