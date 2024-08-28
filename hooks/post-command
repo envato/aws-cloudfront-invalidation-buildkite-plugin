@@ -11,14 +11,21 @@ if [[ ${BUILDKITE_COMMAND_EXIT_STATUS:-0} != '0' ]]; then
 fi
 
 distribution_id="$(plugin_read_config DISTRIBUTION_ID)"
+debug="$(plugin_read_config DEBUG false)"
+
+# Add the --debug flag to the AWS CLI command if debug is enabled
+aws_debug_flag=""
+if [[ "$debug" == "true" ]]; then
+  aws_debug_flag="--debug"
+fi
 
 # This tries to create an invalidation with an empty path list
 #
 # - If we have permission to call create-invalidation for this distribution,
-#   we'll recieve an InvalidArgument error, and we can proceed with a real invalidation
+#   we'll receive an InvalidArgument error, and we can proceed with a real invalidation
 # - Otherwise, either an AccessDenied or NoSuchDistribution error are the most likely results,
 #   in which case we exit with error
-if ! aws cloudfront create-invalidation --distribution-id "$distribution_id" --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' 2>&1 | grep InvalidArgument > /dev/null; then
+if ! aws cloudfront create-invalidation --distribution-id "$distribution_id" --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' $aws_debug_flag 2>&1 | grep InvalidArgument > /dev/null; then
   echo "Unable to invalidate cloudfront cache: create-invalidation not possible for distribution ($distribution_id) with current credentials"
   exit 1
 fi
@@ -31,7 +38,7 @@ done <<< "$(plugin_read_list PATHS)"
 echo "~~~ :cloudfront: Creating Cloudfront invalidation for distribution $distribution_id on paths" "${paths[@]}"
 SLEEP_PERIOD=15
 PERIOD_LIMIT=480
-until aws cloudfront create-invalidation --distribution-id "$distribution_id" --paths "${paths[@]}" --query Invalidation.Id --output text
+until aws cloudfront create-invalidation --distribution-id "$distribution_id" --paths "${paths[@]}" --query Invalidation.Id --output text $aws_debug_flag
 do
   if [ $SLEEP_PERIOD == $PERIOD_LIMIT ]; then
     echo "Maximum retries reached - giving up..."

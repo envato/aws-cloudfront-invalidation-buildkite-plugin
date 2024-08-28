@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-load '/usr/local/lib/bats/load.bash'
+bats_load_library load.bash
 
 # Uncomment the following to get more detail on failures of stubs
 # export AWS_STUB_DEBUG=/dev/tty
@@ -87,10 +87,29 @@ load '/usr/local/lib/bats/load.bash'
 
 @test "Stops executing if a credential problem is detected" {
   export BUILDKITE_COMMAND_EXIT_STATUS=0
+  export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_DISTRIBUTION_ID=test_id
 
   stub aws "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo AccessDenied" \
 
   run $PWD/hooks/post-command
 
   assert_failure
+  unstub aws
+}
+
+@test "AWS CLI includes --debug flag when DEBUG=true" {
+  export BUILDKITE_COMMAND_EXIT_STATUS=0
+  export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_DEBUG=true
+  export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_DISTRIBUTION_ID=test_id
+  export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_PATHS_0=/something/*
+
+  stub aws \
+    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' --debug : echo 'InvalidArgument'" \
+    "cloudfront create-invalidation --distribution-id test_id --paths /something/* --query Invalidation.Id --output text --debug : echo 'cloudfront invalidated with --debug'"
+
+  run $PWD/hooks/post-command
+
+  assert_success
+  assert_output --partial "--debug"
+  unstub aws
 }
