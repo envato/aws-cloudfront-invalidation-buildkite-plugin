@@ -11,7 +11,7 @@ bats_load_library load.bash
   export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_PATHS=/something/*
 
   stub aws \
-    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo InvalidArgument" \
+    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo InvalidArgument >&2; exit 254" \
     "cloudfront create-invalidation --distribution-id test_id --paths /something/* --query Invalidation.Id --output text : echo cloudfront invalidated"
 
   run $PWD/hooks/post-command
@@ -27,7 +27,7 @@ bats_load_library load.bash
   export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_PATHS_0=/something/*
 
   stub aws \
-    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo InvalidArgument" \
+    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo InvalidArgument >&2; exit 254" \
     "cloudfront create-invalidation --distribution-id test_id --paths /something/* --query Invalidation.Id --output text : echo cloudfront invalidated"
 
   run $PWD/hooks/post-command
@@ -44,7 +44,7 @@ bats_load_library load.bash
   export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_PATHS_1=/something-else/*
 
   stub aws \
-    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo InvalidArgument" \
+    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo InvalidArgument >&2; exit 254" \
     "cloudfront create-invalidation --distribution-id test_id --paths /something/* /something-else/* --query Invalidation.Id --output text : echo cloudfront invalidated"
 
   run $PWD/hooks/post-command
@@ -71,7 +71,7 @@ bats_load_library load.bash
   export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_PATHS_1=/something-else/*
 
   stub aws \
-    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo InvalidArgument" \
+    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo InvalidArgument >&2; exit 254" \
     "cloudfront create-invalidation --distribution-id test_id --paths /something/* /something-else/* --query Invalidation.Id --output text : return 1" \
     "cloudfront create-invalidation --distribution-id test_id --paths /something/* /something-else/* --query Invalidation.Id --output text : echo cloudfront invalidated"
   stub sleep "15 : echo sleeping"
@@ -89,7 +89,7 @@ bats_load_library load.bash
   export BUILDKITE_COMMAND_EXIT_STATUS=0
   export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_DISTRIBUTION_ID=test_id
 
-  stub aws "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo AccessDenied" \
+  stub aws "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' : echo AccessDenied >&2; exit 254" \
 
   run $PWD/hooks/post-command
 
@@ -104,7 +104,7 @@ bats_load_library load.bash
   export BUILDKITE_PLUGIN_AWS_CLOUDFRONT_INVALIDATION_PATHS_0=/something/*
 
   stub aws \
-    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' --debug : echo 'InvalidArgument'" \
+    "cloudfront create-invalidation --distribution-id test_id --invalidation-batch 'Paths={Quantity=0,Items=[]},CallerReference=cloudfront-invalidation-buildkite-plugin' --debug : echo InvalidArgument >&2; exit 254" \
     "cloudfront create-invalidation --distribution-id test_id --paths /something/* --query Invalidation.Id --output text --debug : echo 'cloudfront invalidated with --debug'"
 
   run $PWD/hooks/post-command
