@@ -10,7 +10,7 @@ A [Buildkite plugin] that invalidates AWS Cloudfront caches.
 ```yml
 steps:
   - plugins:
-      - envato/aws-cloudfront-invalidation#v0.1.0:
+      - envato/aws-cloudfront-invalidation#v0.2.1:
           distribution-id: <cloudfront-distribution-id>
           paths:
             - <path/files/to/be/invalidated>
